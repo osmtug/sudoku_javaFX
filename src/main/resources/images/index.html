@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>Palettes de Couleurs Douces Sudoku</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #fff;
+    color: #333;
+  }
+  .palette {
+    margin-bottom: 40px;
+  }
+  .palette-name {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+  .colors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .color-box {
+    width: 120px;
+    height: 80px;
+    border-radius: 6px;
+    box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6px 8px;
+    font-weight: 600;
+    font-size: 13px;
+    text-shadow: 0 0 2px rgba(255,255,255,0.8);
+  }
+</style>
+<script>
+  // Fonction pour convertir un code hex en RGB
+  function hexToRgb(hex) {
+    const r = parseInt(hex.substr(1, 2), 16);
+    const g = parseInt(hex.substr(3, 2), 16);
+    const b = parseInt(hex.substr(5, 2), 16);
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+
+  window.onload = () => {
+    const boxes = document.querySelectorAll('.color-box');
+    boxes.forEach(box => {
+      const hex = box.dataset.hex;
+      box.innerHTML = `<div>${hex}</div><div>${hexToRgb(hex)}</div>`;
+    });
+  };
+</script>
+</head>
+<body>
+
+<!-- Palette exemple -->
+<div class="palette">
+  <div class="palette-name">Palette 1 : Bleu pastel doux</div>
+  <div class="colors">
+    <div class="color-box" data-hex="#D0E7F9" style="background:#D0E7F9; color:#375D81;"></div>
+    <div class="color-box" data-hex="#A9C9EB" style="background:#A9C9EB; color:#375D81;"></div>
+    <div class="color-box" data-hex="#375D81" style="background:#375D81; color:#D0E7F9;"></div>
+    <div class="color-box" data-hex="#6497B1" style="background:#6497B1; color:#D0E7F9;"></div>
+    <div class="color-box" data-hex="#91BED4" style="background:#91BED4; color:#375D81;"></div>
+  </div>
+</div>
+
+<!-- Palette 2 : Vert menthe doux -->
+<div class="palette">
+  <div class="palette-name">Palette 2 : Vert menthe doux</div>
+  <div class="colors">
+    <div class="color-box" data-hex="#D9F0E6" style="background:#D9F0E6; color:#3C6E47;"></div>
+    <div class="color-box" data-hex="#A7D3B1" style="background:#A7D3B1; color:#3C6E47;"></div>
+    <div class="color-box" data-hex="#3C6E47" style="background:#3C6E47; color:#D9F0E6;"></div>
+    <div class="color-box" data-hex="#81B29A" style="background:#81B29A; color:#3C6E47;"></div>
+    <div class="color-box" data-hex="#B7D7C5" style="background:#B7D7C5; color:#3C6E47;"></div>
+  </div>
+</div>
+
+<!-- Palette 3 : Tons pêche doux -->
+<div class="palette">
+  <div class="palette-name">Palette 3 : Tons pêche doux</div>
+  <div class="colors">
+    <div class="color-box" data-hex="#FFEDE7" style="background:#FFEDE7; color:#A66C4F;"></div>
+    <div class="color-box" data-hex="#F9CBBE" style="background:#F9CBBE; color:#A66C4F;"></div>
+    <div class="color-box" data-hex="#A66C4F" style="background:#A66C4F; color:#FFEDE7;"></div>
+    <div class="color-box" data-hex="#F2B8A0" style="background:#F2B8A0; color:#A66C4F;"></div>
+    <div class="color-box" data-hex="#F7D2C7" style="background:#F7D2C7; color:#A66C4F;"></div>
+  </div>
+</div>
+
+<!-- Palette 4 : Gris doux et lavande -->
+<div class="palette">
+  <div class="palette-name">Palette 4 : Gris doux et lavande</div>
+  <div class="colors">
+    <div class="color-box" data-hex="#E9E6F7" style="background:#E9E6F7; color:#6D5D7A;"></div>
+    <div class="color-box" data-hex="#C4C1E0" style="background:#C4C1E0; color:#6D5D7A;"></div>
+    <div class="color-box" data-hex="#6D5D7A" style="background:#6D5D7A; color:#E9E6F7;"></div>
+    <div class="color-box" data-hex="#A7A1C1" style="background:#A7A1C1; color:#6D5D7A;"></div>
+    <div class="color-box" data-hex="#CAC6E3" style="background:#CAC6E3; color:#6D5D7A;"></div>
+  </div>
+</div>
+
+<!-- Palette 5 : Rose / Rouge doux -->
+<div class="palette">
+  <div class="palette-name">Palette 5 : Rose / Rouge doux</div>
+  <div class="colors">
+    <div class="color-box" data-hex="#F8D7DA" style="background:#F8D7DA; color:#6E1E1E;"></div>
+    <div class="color-box" data-hex="#F1A2A6" style="background:#F1A2A6; color:#6E1E1E;"></div>
+    <div class="color-box" data-hex="#D94F4F" style="background:#D94F4F; color:#F8D7DA;"></div>
+    <div class="color-box" data-hex="#B23A3A" style="background:#B23A3A; color:#F8D7DA;"></div>
+    <div class="color-box" data-hex="#6E1E1E" style="background:#6E1E1E; color:#F8D7DA;"></div>
+  </div>
+</div>
+
+<!-- Palette 6 : Rose pêche / Beige doux -->
+<div class="palette">
+  <div class="palette-name">Palette 6 : Rose pêche / Beige doux</div>
+  <div class="colors">
+    <div class="color-box" data-hex="#FFEDE6" style="background:#FFEDE6; color:#BFA086;"></div>
+    <div class="color-box" data-hex="#F9CBB7" style="background:#F9CBB7; color:#BFA086;"></div>
+    <div class="color-box" data-hex="#F4A87C" style="background:#F4A87C; color:#BFA086;"></div>
+    <div class="color-box" data-hex="#DFAF94" style="background:#DFAF94; color:#BFA086;"></div>
+    <div class="color-box" data-hex="#BFA086" style="background:#BFA086; color:#FFEDE6;"></div>
+  </div>
+</div>
+
+</body>
+</html>

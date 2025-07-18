@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<VBox fx:id="vBoxMain" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="sudokuosman.view.OptionsController"
+      spacing="15" alignment="CENTER" style="-fx-padding: 20; -fx-margin: 20;" >
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+    <ComboBox fx:id="comboPalette" prefWidth="200"/>
+
+    <CheckBox fx:id="darkModeCheckBox" text="Mode sombre" />
+
+    <Button fx:id="btnRetour" text="Retour à l'accueil" onAction="#handleRetourAccueil" />
+</VBox>

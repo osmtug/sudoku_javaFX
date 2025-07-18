@@ -1,0 +1,27 @@
+package sudokuosman;
+
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+
+public class MainApp extends Application {
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo2.png")));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Accueil.fxml"));
+        Scene scene = new Scene(loader.load());
+
+        primaryStage.setTitle("Sudoku MVVM");
+        primaryStage.setMinHeight(450);
+        primaryStage.setMinWidth(325);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}

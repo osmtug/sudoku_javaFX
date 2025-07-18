@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.GridPane?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<VBox fx:id="vBoxMain" xmlns:fx="http://javafx.com/fxml" fx:controller="sudokuosman.view.SudokuController" spacing="10" alignment="TOP_LEFT" >
+    <Button fx:id="btnRetour" text="←" prefWidth="35" alignment="center"/>
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    <VBox alignment="CENTER" spacing="10" VBox.vgrow="ALWAYS">
+        <GridPane fx:id="gridPane" hgap="1" vgap="1" alignment="center"/>
+        <HBox fx:id="numberButtons" spacing="5" alignment="center"/>
+    </VBox>
+
+</VBox>

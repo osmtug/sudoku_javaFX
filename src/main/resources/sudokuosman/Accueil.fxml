@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.geometry.Insets?>
+<VBox fx:id="vBoxMain" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="sudokuosman.view.AccueilController"
+      alignment="CENTER" spacing="20">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <Button fx:id="btnJouer" text="Jouer" prefWidth="200"/>
+    <Button fx:id="btnOptions" text="Options" prefWidth="200"/>
+    <Button fx:id="btnQuitter" text="Quitter" prefWidth="200"/>
+
+</VBox>
