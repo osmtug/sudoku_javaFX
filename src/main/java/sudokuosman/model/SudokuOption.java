@@ -3,21 +3,41 @@ package sudokuosman.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SudokuColor {
+public class SudokuOption {
     public enum ColorPalettName{
         Blue,
         Green,
         Peach,
         Lavender,
         Red,
-        Beige
+        Beige,
+        Sanda
+    }
+
+    public enum DifficultyLevel{
+        Easy,
+        Medium,
+        Difficult,
+        Impossible
     }
 
     static public ColorPalettName colorPalett = ColorPalettName.Green;
 
+    static public DifficultyLevel difficultyLevel = DifficultyLevel.Easy;
+
     static public boolean isDarkMode = false;
 
     static public Map<ColorPalettName, ColorPalett> colorPaletts;
+
+    public static int getNbEmptyCell(){
+        switch (difficultyLevel){
+            case Easy -> { return 35; }
+            case Medium -> { return 42; }
+            case Difficult -> { return 50; }
+            case Impossible -> { return 90; }
+        }
+        return 1;
+    }
 
     static {
         colorPaletts = new HashMap<>();
@@ -27,6 +47,7 @@ public class SudokuColor {
         colorPaletts.put(ColorPalettName.Red, new ColorPalett("F8D7DA", "F1A2A6", "D94F4F", "B23A3A", "6E1E1E"));
         colorPaletts.put(ColorPalettName.Peach, new ColorPalett("FFEDE7", "F9CBBE", "F7D2C7", "F2B8A0", "A66C4F"));
         colorPaletts.put(ColorPalettName.Lavender, new ColorPalett("E9E6F7", "CAC6E3", "C4C1E0", "A7A1C1", "6D5D7A"));
+        colorPaletts.put(ColorPalettName.Sanda, new ColorPalett("FAEAED", "FFC0CB", "D1A1A9", "A5747C", "46032A"));
     }
 
     static public Color getBGColor(){

@@ -16,5 +16,7 @@
 
     <CheckBox fx:id="darkModeCheckBox" text="Mode sombre" />
 
+    <ComboBox fx:id="comboDifficulty" prefWidth="200"/>
+
     <Button fx:id="btnRetour" text="Retour à l'accueil" onAction="#handleRetourAccueil" />
 </VBox>

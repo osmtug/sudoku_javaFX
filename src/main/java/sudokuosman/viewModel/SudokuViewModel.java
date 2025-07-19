@@ -38,8 +38,16 @@ public class SudokuViewModel {
         return model.getValue(row, col);
     }
 
+    public int getNumberColor(int row, int col) { return model.getNumberColor(row, col); }
+
     public void setValue(int row, int col, int value) {
+        if (model.numberIsComplete(value))
+            return;
+
+        if (cells[row][col].get() != 0 && getNumberColor(row, col) != -1)
+            return;
         cells[row][col].set(value);
+        model.updateNumberColor(row, col);
     }
 
     public SudokuGrid getModel() {
@@ -60,5 +68,9 @@ public class SudokuViewModel {
 
     public List<int[]> getSameNumber(int row, int col){
         return model.getSameNumber(row, col);
+    }
+
+    public boolean numberIsComplete(int val){
+        return model.numberIsComplete(val);
     }
 }

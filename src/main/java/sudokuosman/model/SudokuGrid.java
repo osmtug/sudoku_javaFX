@@ -1,12 +1,15 @@
 package sudokuosman.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 public class SudokuGrid {
     private final int SIZE = 9;
     private int[][] grid;
+    private int[][] solution;
+    private int [][] numberColor; // 0 = normal Color / 1 = blue color for correct guess / -1  = red color for wrong guess
     private Random rand = new Random();
 
     public SudokuGrid() {
@@ -16,6 +19,9 @@ public class SudokuGrid {
             for (int j = 0; j < SIZE; j++)
                 grid[i][j] = 0;
         generate();
+        solution = copyGrid(grid);
+        numberColor = new int[grid.length][grid[0].length]; // 0 default
+        removeValues(SudokuOption.getNbEmptyCell(), 1000);
     }
 
     public int getValue(int row, int col) {
@@ -37,12 +43,37 @@ public class SudokuGrid {
         if (val < 1 || val > 9) return res;
         for (int i = 0; i < grid.length; i++){
             for (int j = 0; j < grid[i].length; j++){
-                if (val == grid[i][j]){
+                if (val == grid[i][j] && numberColor[i][j] != -1){
                     res.add(new int[]{i, j});
                 }
             }
         }
         return res;
+    }
+
+    public int getNumberColor(int row, int col){ return numberColor[row][col]; }
+
+    public void setNumberColor(int row, int col, int val){ numberColor[row][col] = val; }
+
+    public boolean numberIsComplete(int number){
+        if (number == 0) return false;
+        int count = 0;
+        for (int i = 0; i < grid.length; i++){
+            for (int j = 0; j < grid[i].length; j++){
+                if (number == grid[i][j] && numberColor[i][j] != -1){
+                    count++;
+                }
+            }
+        }
+        return count == 9;
+    }
+
+    public void updateNumberColor(int row, int col){
+        if (grid[row][col] == solution[row][col]){
+            numberColor[row][col] = 1;
+        }else{
+            numberColor[row][col] = -1;
+        }
     }
 
     public List<int[]> getSelectedZone(int row, int col){
@@ -105,8 +136,8 @@ public class SudokuGrid {
 
     // --- Génération complète d'une grille (backtracking) ---
 
-    public boolean generate() {
-        return generateRecursive(0, 0);
+    public void generate() {
+        generateRecursive(0, 0);
     }
 
     private boolean generateRecursive(int row, int col) {
@@ -146,6 +177,51 @@ public class SudokuGrid {
         }
 
         return nums;
+    }
+
+    // --- Suppression de valeurs en s'assurant une unique solution ---
+
+    public void removeValues(int n, int maxTries) {
+        List<int[]> cells = new ArrayList<>();
+
+        // Liste de toutes les positions possibles
+        for (int row = 0; row < SIZE; row++)
+            for (int col = 0; col < SIZE; col++)
+                cells.add(new int[]{row, col});
+
+        Collections.shuffle(cells); // Mélanger aléatoirement
+        SudokuSolver solver = new SudokuSolver();
+
+        int removed = 0;
+        int tries = 0;
+        int index = 0;
+
+        while (removed < n && tries < maxTries && index < cells.size()) {
+            int[] pos = cells.get(index++);
+            int row = pos[0], col = pos[1];
+            int backup = grid[row][col];
+            if (backup == 0) continue;
+
+            grid[row][col] = 0;
+            tries++;
+
+            int solutions = solver.countSolutions(copyGrid(grid));
+            if (solutions == 1) {
+                removed++;
+            } else {
+                grid[row][col] = backup; // Rétablir si plusieurs solutions
+            }
+        }
+
+        System.out.println("Cases retirées : " + removed + " / Tentatives : " + tries);
+    }
+
+    private int[][] copyGrid(int[][] original) {
+        int[][] copy = new int[SIZE][];
+        for (int i = 0; i < SIZE; i++) {
+            copy[i] = original[i].clone();
+        }
+        return copy;
     }
 }
 

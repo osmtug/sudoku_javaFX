@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import sudokuosman.view.AccueilController;
 
 public class MainApp extends Application {
 
@@ -14,9 +15,10 @@ public class MainApp extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Accueil.fxml"));
         Scene scene = new Scene(loader.load());
 
+        AccueilController controller = loader.getController();
+        controller.setStage(primaryStage);
+
         primaryStage.setTitle("Sudoku MVVM");
-        primaryStage.setMinHeight(450);
-        primaryStage.setMinWidth(325);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
