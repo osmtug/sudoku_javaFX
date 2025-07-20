@@ -70,7 +70,7 @@ public class SudokuGrid {
     }
 
     public boolean updateNumberColor(int row, int col){
-        if (grid[row][col] == solution[row][col]){
+        if (grid[row][col] == solution[row][col] || grid[row][col] == 0){
             numberColor[row][col] = 1;
             return true;
         }else{
