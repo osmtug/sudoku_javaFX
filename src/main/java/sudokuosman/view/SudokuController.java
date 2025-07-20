@@ -28,6 +28,7 @@ import sudokuosman.viewModel.SudokuViewModel;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class SudokuController {
 
@@ -346,6 +347,7 @@ public class SudokuController {
     private void setValue(int val){
         if (!viewModel.setValueIsCorrect(selectedRow, selectedCol, val)){
             viewModel.decrementHealth();
+            shakeAllLabels(700);
             updateHearts(viewModel.getHealth());
         }
         if (viewModel.numberIsComplete(val)){
@@ -428,6 +430,57 @@ public class SudokuController {
         if (timeline != null) {
             timeline.stop();
         }
+    }
+
+    public void shakeAllLabels(int durationMillis) {
+        Random rand = new Random();
+        Timeline timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+
+        final int frameInterval = 30; // ms
+        final int totalFrames = durationMillis / frameInterval;
+        final double initialIntensity = 8.0;
+
+        final int[] currentFrame = {0};
+
+        KeyFrame frame = new KeyFrame(Duration.millis(frameInterval), e -> {
+            double progress = (double) currentFrame[0] / totalFrames;
+            double intensity = initialIntensity * (1.0 - progress); // diminue progressivement
+
+            for (int row = 0; row < labels.length; row++) {
+                for (int col = 0; col < labels[row].length; col++) {
+                    Label label = labels[row][col];
+                    if (label == null) continue;
+
+                    double dx = (rand.nextDouble() * 2 - 1) * intensity;
+                    double dy = (rand.nextDouble() * 2 - 1) * intensity;
+                    double angle = (rand.nextDouble() * 2 - 1) * intensity;
+
+                    label.setTranslateX(dx);
+                    label.setTranslateY(dy);
+                    label.setRotate(angle);
+                }
+            }
+
+            currentFrame[0]++;
+            if (currentFrame[0] >= totalFrames) {
+                timeline.stop();
+                // Remise en position normale
+                for (int row = 0; row < labels.length; row++) {
+                    for (int col = 0; col < labels[row].length; col++) {
+                        Label label = labels[row][col];
+                        if (label != null) {
+                            label.setTranslateX(0);
+                            label.setTranslateY(0);
+                            label.setRotate(0);
+                        }
+                    }
+                }
+            }
+        });
+
+        timeline.getKeyFrames().add(frame);
+        timeline.play();
     }
 }
 
