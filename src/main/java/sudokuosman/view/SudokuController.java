@@ -9,16 +9,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.animation.*;
 import javafx.util.Duration;
@@ -27,11 +27,20 @@ import sudokuosman.viewModel.SudokuViewModel;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class SudokuController {
 
     public VBox vBoxMain;
     public Button btnRetour;
+    public ImageView heart1;
+    public ImageView heart2;
+    public ImageView heart3;
+    public Label timerLabel;
+
+    private Timeline timeline;
+    private int seconds = 0;
+
     @FXML
     private GridPane gridPane;
 
@@ -129,6 +138,8 @@ public class SudokuController {
         }
 
         setStyle();
+
+        startTimer();
     }
 
     private Button createButton(int i) {
@@ -158,6 +169,10 @@ public class SudokuController {
     }
 
     private void setStyle() {
+
+        normalLabel.setStyle("-fx-text-fill: "+ SudokuOption.getNumberColor() +";");
+        annotationLabel.setStyle("-fx-text-fill: "+ SudokuOption.getNumberColor() +";");
+        timerLabel.setStyle("-fx-text-fill: "+ SudokuOption.getNumberColor() +"; -fx-font-weight: bold; -fx-font-size: 18;");
 
         switchContainer.setStyle("-fx-background-color: "+ SudokuOption.getselectedZoneColor() +"; " +
                 "-fx-background-radius: 30; -fx-border-color: "+ SudokuOption.getNumberColor() +";" +
@@ -329,11 +344,30 @@ public class SudokuController {
     }
 
     private void setValue(int val){
-        viewModel.setValue(selectedRow, selectedCol, val);
+        if (!viewModel.setValueIsCorrect(selectedRow, selectedCol, val)){
+            viewModel.decrementHealth();
+            updateHearts(viewModel.getHealth());
+        }
         if (viewModel.numberIsComplete(val)){
             buttons[val].setDisable(true);
         }
+
         setStyle();
+    }
+
+
+    public void updateHearts(int nbCoeurs) {
+        // Clamp the value to [0, 3]
+        nbCoeurs = Math.max(0, Math.min(3, nbCoeurs));
+
+        // Load images
+        Image fullHeart = new Image(Objects.requireNonNull(getClass().getResource("/images/heart.png")).toExternalForm());
+        Image emptyHeart = new Image(Objects.requireNonNull(getClass().getResource("/images/heart_empty.png")).toExternalForm());
+
+        // Update each heart
+        heart1.setImage(nbCoeurs >= 1 ? fullHeart : emptyHeart);
+        heart2.setImage(nbCoeurs >= 2 ? fullHeart : emptyHeart);
+        heart3.setImage(nbCoeurs >= 3 ? fullHeart : emptyHeart);
     }
 
     private void toggleSwitch() {
@@ -368,6 +402,31 @@ public class SudokuController {
             stage.setScene(new Scene(root));
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void startTimer() {
+        if (timeline != null) {
+            timeline.stop(); // reset previous if any
+        }
+
+        seconds = 0;
+        timerLabel.setText("00:00");
+
+        timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            seconds++;
+            int minutes = seconds / 60;
+            int sec = seconds % 60;
+            timerLabel.setText(String.format("%02d:%02d", minutes, sec));
+        }));
+
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
+
+    public void stopTimer() {
+        if (timeline != null) {
+            timeline.stop();
         }
     }
 }

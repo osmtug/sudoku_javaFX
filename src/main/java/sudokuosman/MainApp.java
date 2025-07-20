@@ -21,6 +21,8 @@ public class MainApp extends Application {
         primaryStage.setTitle("Sudoku MVVM");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        System.out.println(getClass().getResource("/images/heart.png"));
     }
 
     public static void main(String[] args) {

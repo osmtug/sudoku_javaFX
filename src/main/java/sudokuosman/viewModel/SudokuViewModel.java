@@ -40,15 +40,19 @@ public class SudokuViewModel {
 
     public int getNumberColor(int row, int col) { return model.getNumberColor(row, col); }
 
-    public void setValue(int row, int col, int value) {
+    public boolean setValueIsCorrect(int row, int col, int value) {
         if (model.numberIsComplete(value))
-            return;
+            return true;
 
         if (cells[row][col].get() != 0 && getNumberColor(row, col) != -1)
-            return;
+            return true;
         cells[row][col].set(value);
-        model.updateNumberColor(row, col);
+        return model.updateNumberColor(row, col);
     }
+
+    public int getHealth() { return model.getHealth(); }
+
+    public void decrementHealth() { model.decrementHealth();}
 
     public SudokuGrid getModel() {
         return model;

@@ -11,6 +11,7 @@ public class SudokuGrid {
     private int[][] solution;
     private int [][] numberColor; // 0 = normal Color / 1 = blue color for correct guess / -1  = red color for wrong guess
     private Random rand = new Random();
+    private int health = 3;
 
     public SudokuGrid() {
         grid = new int[SIZE][SIZE];
@@ -68,13 +69,19 @@ public class SudokuGrid {
         return count == 9;
     }
 
-    public void updateNumberColor(int row, int col){
+    public boolean updateNumberColor(int row, int col){
         if (grid[row][col] == solution[row][col]){
             numberColor[row][col] = 1;
+            return true;
         }else{
             numberColor[row][col] = -1;
+            return false;
         }
     }
+
+    public int getHealth() { return this.health; }
+
+    public void decrementHealth() { this.health--;}
 
     public List<int[]> getSelectedZone(int row, int col){
         List<int[]> res = new ArrayList<int[]>();
@@ -137,6 +144,7 @@ public class SudokuGrid {
     // --- Génération complète d'une grille (backtracking) ---
 
     public void generate() {
+        health = 3;
         generateRecursive(0, 0);
     }
 
