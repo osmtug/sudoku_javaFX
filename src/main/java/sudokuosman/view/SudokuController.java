@@ -3,6 +3,7 @@ package sudokuosman.view;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,6 +27,7 @@ import sudokuosman.model.SudokuOption;
 import sudokuosman.viewModel.SudokuViewModel;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -347,7 +349,15 @@ public class SudokuController {
     private void setValue(int val){
         if (!viewModel.setValueIsCorrect(selectedRow, selectedCol, val)){
             viewModel.decrementHealth();
-            shakeAllLabels(700);
+            if (viewModel.getHealth() == 2){
+                shakeAllLabels(700, 4);
+            }else if (viewModel.getHealth() == 1){
+                shakeAllLabels(700, 8);
+            }else{
+                stopTimer();
+                gameOverAnimation();
+            }
+
             updateHearts(viewModel.getHealth());
         }
         if (viewModel.numberIsComplete(val)){
@@ -381,7 +391,6 @@ public class SudokuController {
         }
         isAnnotation = !isAnnotation;
         transition.play();
-
     }
 
     public void setStage(Stage stage){
@@ -432,14 +441,13 @@ public class SudokuController {
         }
     }
 
-    public void shakeAllLabels(int durationMillis) {
+    public void shakeAllLabels(int durationMillis, double initialIntensity) {
         Random rand = new Random();
         Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
 
         final int frameInterval = 30; // ms
         final int totalFrames = durationMillis / frameInterval;
-        final double initialIntensity = 8.0;
 
         final int[] currentFrame = {0};
 
@@ -481,6 +489,203 @@ public class SudokuController {
 
         timeline.getKeyFrames().add(frame);
         timeline.play();
+    }
+
+    public void gameOverAnimation() {
+        Random rand = new Random();
+        double centerX = gridPane.getWidth() / 2;
+        double centerY = gridPane.getHeight() / 2;
+
+        int durationMillis = 1500;
+        int frameInterval = 30;
+        int totalFrames = durationMillis / frameInterval;
+        double maxIntensity = 8.0;
+
+        int[] currentFrame = {0};
+
+        Timeline trembleTimeline = new Timeline();
+        trembleTimeline.setCycleCount(Timeline.INDEFINITE);
+
+        KeyFrame trembleFrame = new KeyFrame(Duration.millis(frameInterval), e -> {
+            double progress = (double) currentFrame[0] / totalFrames;
+            double intensity = maxIntensity * (1 - progress);  // <-- ATTENUATION ici
+
+            for (int row = 0; row < labels.length; row++) {
+                for (int col = 0; col < labels[row].length; col++) {
+                    Label label = labels[row][col];
+                    if (label == null) continue;
+
+                    label.textProperty().unbind();
+                    label.setText(randomChar());
+
+                    double dx = (rand.nextDouble() * 2 - 1) * intensity;
+                    double dy = (rand.nextDouble() * 2 - 1) * intensity;
+                    double angle = (rand.nextDouble() * 2 - 1) * intensity;
+
+                    label.setTranslateX(dx);
+                    label.setTranslateY(dy);
+                    label.setRotate(angle);
+                }
+            }
+
+            currentFrame[0]++;
+            if (currentFrame[0] >= totalFrames) {
+                trembleTimeline.stop();
+                moveToCenterWithTremble(rand, centerX, centerY);
+            }
+        });
+
+        trembleTimeline.getKeyFrames().add(trembleFrame);
+        trembleTimeline.play();
+    }
+
+    private void moveToCenterWithTremble(Random rand, double centerX, double centerY) {
+        int durationMillis = 2000;
+        int frameInterval = 30;
+        int totalFrames = durationMillis / frameInterval;
+        int[] currentFrame = {0};
+        double maxTrembleIntensity = 8.0;
+
+        Timeline timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+
+        KeyFrame frame = new KeyFrame(Duration.millis(frameInterval), e -> {
+            double progress = (double) currentFrame[0] / totalFrames;
+            double intensity = maxTrembleIntensity * progress+4; // Tremblement augmente
+
+            for (int row = 0; row < labels.length; row++) {
+                for (int col = 0; col < labels[row].length; col++) {
+                    Label label = labels[row][col];
+                    if (label == null) continue;
+
+                    label.textProperty().unbind();
+
+                    double labelCenterX = label.getLayoutX() + label.getWidth() / 2;
+                    double labelCenterY = label.getLayoutY() + label.getHeight() / 2;
+
+                    label.setText(randomChar());
+
+                    double diffX = centerX - labelCenterX;
+                    double diffY = centerY - labelCenterY;
+
+                    double moveX = diffX * (progress * 0.5);
+                    double moveY = diffY * (progress * 0.5);
+
+                    double dx = (rand.nextDouble() * 2 - 1) * intensity;
+                    double dy = (rand.nextDouble() * 2 - 1) * intensity;
+                    double angle = (rand.nextDouble() * 2 - 1) * intensity;
+
+                    label.setTranslateX(moveX + dx);
+                    label.setTranslateY(moveY + dy);
+                    label.setRotate(angle);
+                }
+            }
+
+            currentFrame[0]++;
+            if (currentFrame[0] >= totalFrames) {
+                timeline.stop();
+                explosionWithGravity(rand, centerX, centerY);
+            }
+        });
+
+        timeline.getKeyFrames().add(frame);
+        timeline.play();
+    }
+
+
+    private void explosionWithGravity(Random rand, double centerX, double centerY) {
+        int durationMillis = 3000;
+        int frameInterval = 30;
+        int totalFrames = durationMillis / frameInterval;
+        int[] currentFrame = {0};
+
+        // Pour stocker la vitesse initiale de chaque label (dx, dy, rotationSpeed)
+        class Velocity {
+            double vx, vy, vr;
+            Velocity(double vx, double vy, double vr) {
+                this.vx = vx;
+                this.vy = vy;
+                this.vr = vr;
+            }
+        }
+
+        Velocity[][] velocities = new Velocity[labels.length][labels[0].length];
+        double gravity = 0.5; // accélération vers le bas
+
+        // Initialiser vitesses aléatoires de départ (explosion)
+        for (int row = 0; row < labels.length; row++) {
+            for (int col = 0; col < labels[row].length; col++) {
+                Label label = labels[row][col];
+                if (label == null) continue;
+
+                double angle = rand.nextDouble() * 2 * Math.PI;
+                double speed = 12 + rand.nextDouble() * 4; // vitesse initiale entre 8 et 12 px/frame
+                double vx = Math.cos(angle) * speed;
+                double vy = Math.sin(angle) * speed;
+                double vr = (rand.nextDouble() * 10 - 5); // vitesse rotation
+
+                velocities[row][col] = new Velocity(vx, vy, vr);
+            }
+        }
+
+        Timeline timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+
+        KeyFrame frame = new KeyFrame(Duration.millis(frameInterval), e -> {
+            boolean allOut = true; // pour détecter si tous les labels sont hors écran
+
+            for (int row = 0; row < labels.length; row++) {
+                for (int col = 0; col < labels[row].length; col++) {
+                    Label label = labels[row][col];
+                    if (label == null) continue;
+
+                    Velocity v = velocities[row][col];
+                    if (v == null) continue;
+
+                    // Mise à jour position et rotation
+                    label.setTranslateX(label.getTranslateX() + v.vx);
+                    label.setTranslateY(label.getTranslateY() + v.vy);
+                    label.setRotate(label.getRotate() + v.vr);
+
+                    // Applique gravité
+                    v.vy += gravity;
+
+                    // Récupérer la position du label dans la scène
+                    Point2D scenePos = label.localToScene(0, 0);
+
+                    double x = scenePos.getX();
+                    double y = scenePos.getY();
+
+                    // Récupérer la taille de la fenêtre (ou de ton conteneur visible)
+                    double sceneWidth = label.getScene().getWidth();
+                    double sceneHeight = label.getScene().getHeight();
+
+                    // Vérifier si le label est toujours visible dans la scène (avec un margin)
+                    boolean visible = x >= -label.getWidth() && x <= sceneWidth + label.getWidth() &&
+                            y >= -label.getHeight() && y <= sceneHeight + label.getHeight();
+
+                    if (visible) {
+                        allOut = false;  // Au moins un label est encore visible
+                    }
+                }
+            }
+
+            // Si tous les labels sont sortis, stoppe l’animation
+            if (allOut) {
+                timeline.stop();
+                backToHome();  // ou autre action
+            }
+        });
+
+        timeline.getKeyFrames().add(frame);
+        timeline.play();
+    }
+
+
+    private String randomChar() {
+        String chars = "!@#$%&*+?01░▒▓█";
+        Random rand = new Random();
+        return String.valueOf(chars.charAt(rand.nextInt(chars.length())));
     }
 }
 
