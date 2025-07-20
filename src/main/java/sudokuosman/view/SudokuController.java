@@ -347,7 +347,8 @@ public class SudokuController {
     }
 
     private void setValue(int val){
-        if (!viewModel.setValueIsCorrect(selectedRow, selectedCol, val)){
+        int res = viewModel.setValueIsCorrect(selectedRow, selectedCol, val);
+        if ( res == 0){
             viewModel.decrementHealth();
             if (viewModel.getHealth() == 2){
                 shakeAllLabels(700, 4);
@@ -359,6 +360,8 @@ public class SudokuController {
             }
 
             updateHearts(viewModel.getHealth());
+        }else if (res == 1){
+            shockwaveFrom(selectedRow, selectedCol);
         }
         if (viewModel.numberIsComplete(val)){
             buttons[val].setDisable(true);
@@ -687,6 +690,65 @@ public class SudokuController {
         Random rand = new Random();
         return String.valueOf(chars.charAt(rand.nextInt(chars.length())));
     }
+
+    public void shockwaveFrom(int originRow, int originCol) {
+        int maxRadius = Math.max(labels.length, labels[0].length);
+        int delayBetweenRings = 80; // ms entre chaque cercle
+
+        for (int radius = 0; radius <= maxRadius; radius++) {
+            int currentRadius = radius;
+
+            PauseTransition delay = new PauseTransition(Duration.millis(radius * delayBetweenRings));
+            delay.setOnFinished(e -> {
+                for (int row = 0; row < labels.length; row++) {
+                    for (int col = 0; col < labels[0].length; col++) {
+                        if (labels[row][col] == null) continue;
+
+                        int dist = Math.abs(row - originRow) + Math.abs(col - originCol);
+                        if (dist == currentRadius) {
+                            //playShockTremble(labels[row][col]);
+                            playPulseEffect(labels[row][col]);
+                        }
+                    }
+                }
+            });
+            delay.play();
+        }
+    }
+
+    private void playPulseEffect(Label label) {
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), label);
+        scaleUp.setToX(1.2);
+        scaleUp.setToY(1.2);
+
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), label);
+        scaleDown.setToX(1.0);
+        scaleDown.setToY(1.0);
+
+        SequentialTransition pulse = new SequentialTransition(scaleUp, scaleDown);
+        pulse.play();
+    }
+
+    private void playShockTremble(Label label) {
+        Random rand = new Random();
+        Timeline tremble = new Timeline();
+        tremble.setCycleCount(5); // 5 secousses rapides
+
+        tremble.getKeyFrames().add(new KeyFrame(Duration.millis(30), e -> {
+            double dx = (rand.nextDouble() * 2 - 1) * 5;
+            double dy = (rand.nextDouble() * 2 - 1) * 5;
+            label.setTranslateX(dx);
+            label.setTranslateY(dy);
+        }));
+
+        tremble.setOnFinished(e -> {
+            label.setTranslateX(0);
+            label.setTranslateY(0);
+        });
+
+        tremble.play();
+    }
+
 }
 
 

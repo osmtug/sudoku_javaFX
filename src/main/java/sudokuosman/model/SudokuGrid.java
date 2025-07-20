@@ -69,13 +69,13 @@ public class SudokuGrid {
         return count == 9;
     }
 
-    public boolean updateNumberColor(int row, int col){
+    public int updateNumberColor(int row, int col){
         if (grid[row][col] == solution[row][col] || grid[row][col] == 0){
             numberColor[row][col] = 1;
-            return true;
+            return 1;
         }else{
             numberColor[row][col] = -1;
-            return false;
+            return 0;
         }
     }
 

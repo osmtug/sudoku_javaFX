@@ -40,12 +40,12 @@ public class SudokuViewModel {
 
     public int getNumberColor(int row, int col) { return model.getNumberColor(row, col); }
 
-    public boolean setValueIsCorrect(int row, int col, int value) {
+    public int setValueIsCorrect(int row, int col, int value) {
         if (model.numberIsComplete(value))
-            return true;
+            return -1;
 
         if (cells[row][col].get() != 0 && getNumberColor(row, col) != -1)
-            return true;
+            return -1;
         cells[row][col].set(value);
         return model.updateNumberColor(row, col);
     }
