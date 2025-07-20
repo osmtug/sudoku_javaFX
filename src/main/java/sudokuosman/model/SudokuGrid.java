@@ -133,7 +133,7 @@ public class SudokuGrid {
         for (int r = 0; r < SIZE; r++) {
             for (int c = 0; c < SIZE; c++) {
                 int val = grid[r][c];
-                if (val >= 1 && val <= 9 && !isValid(r, c, val)) {
+                if (val != solution[r][c]) {
                     return false;
                 }
             }

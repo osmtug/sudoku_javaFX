@@ -3,6 +3,7 @@ package sudokuosman.view;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -13,10 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -365,6 +363,10 @@ public class SudokuController {
         }
         if (viewModel.numberIsComplete(val)){
             buttons[val].setDisable(true);
+        }
+
+        if (viewModel.isFinished()){
+            playVictorySequence();
         }
 
         setStyle();
@@ -747,6 +749,184 @@ public class SudokuController {
         });
 
         tremble.play();
+    }
+
+    public void illuminateSpiralGrid() {
+        int rows = labels.length;
+        int cols = labels[0].length;
+        boolean[][] visited = new boolean[rows][cols];
+        List<Label> spiralOrder = new ArrayList<>();
+
+        int top = 0, bottom = rows - 1, left = 0, right = cols - 1;
+
+        while (top <= bottom && left <= right) {
+            for (int j = left; j <= right; j++) spiralOrder.add(labels[top][j]);
+            top++;
+            for (int i = top; i <= bottom; i++) spiralOrder.add(labels[i][right]);
+            right--;
+            if (top <= bottom)
+                for (int j = right; j >= left; j--) spiralOrder.add(labels[bottom][j]);
+            bottom--;
+            if (left <= right)
+                for (int i = bottom; i >= top; i--) spiralOrder.add(labels[i][left]);
+            left++;
+        }
+
+        for (int i = 0; i < spiralOrder.size(); i++) {
+            Label label = spiralOrder.get(i);
+            if (label == null) continue;
+
+            Timeline t = new Timeline(
+                    new KeyFrame(Duration.ZERO, new KeyValue(label.scaleXProperty(), 1), new KeyValue(label.scaleYProperty(), 1)),
+                    new KeyFrame(Duration.millis(100), new KeyValue(label.scaleXProperty(), 1.3), new KeyValue(label.scaleYProperty(), 1.3)),
+                    new KeyFrame(Duration.millis(200), new KeyValue(label.scaleXProperty(), 1), new KeyValue(label.scaleYProperty(), 1))
+            );
+            t.setDelay(Duration.millis(i * 40));
+            t.play();
+        }
+    }
+
+    public void animateRainbowCycle() {
+        Color[] rainbow = {
+                Color.RED, Color.ORANGE, Color.YELLOW,
+                Color.LIMEGREEN, Color.CYAN, Color.INDIGO, Color.MAGENTA
+        };
+
+        Timeline timeline = new Timeline();
+        timeline.setCycleCount(Animation.INDEFINITE);
+
+        for (int row = 0; row < labels.length; row++) {
+            for (int col = 0; col < labels[0].length; col++) {
+                Label label = labels[row][col];
+                if (label == null) continue;
+
+                int delay = (row + col) * 100;
+                KeyFrame kf = new KeyFrame(Duration.millis(delay), evt -> {
+                    int index = (int) ((System.currentTimeMillis() / 100) % rainbow.length);
+                    label.setTextFill(rainbow[index]);
+                });
+                timeline.getKeyFrames().add(kf);
+            }
+        }
+
+        timeline.play();
+    }
+
+    public void centralPulseWave() {
+        int rows = labels.length;
+        int cols = labels[0].length;
+        int centerRow = rows / 2;
+        int centerCol = cols / 2;
+
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                Label label = labels[row][col];
+                if (label == null) continue;
+
+                double dist = Math.hypot(row - centerRow, col - centerCol);
+                int delay = (int) (dist * 80);
+
+                Timeline wave = new Timeline(
+                        new KeyFrame(Duration.ZERO,
+                                new KeyValue(label.opacityProperty(), 1),
+                                new KeyValue(label.scaleXProperty(), 1),
+                                new KeyValue(label.scaleYProperty(), 1)
+                        ),
+                        new KeyFrame(Duration.millis(300),
+                                new KeyValue(label.opacityProperty(), 0.4),
+                                new KeyValue(label.scaleXProperty(), 1.4),
+                                new KeyValue(label.scaleYProperty(), 1.4)
+                        ),
+                        new KeyFrame(Duration.millis(600),
+                                new KeyValue(label.opacityProperty(), 1),
+                                new KeyValue(label.scaleXProperty(), 1),
+                                new KeyValue(label.scaleYProperty(), 1)
+                        )
+                );
+                wave.setDelay(Duration.millis(delay));
+                wave.play();
+            }
+        }
+    }
+
+    public void explodeConfettiWave() {
+        Pane overlay = new Pane();
+        gridPane.getChildren().add(overlay);
+        overlay.setMouseTransparent(true);
+
+        Random rand = new Random();
+
+        for (Label[] rowLabels : labels) {
+            for (Label label : rowLabels) {
+                if (label == null) continue;
+
+                Bounds bounds = label.localToScene(label.getBoundsInLocal());
+                double centerX = bounds.getMinX() + bounds.getWidth() / 2;
+                double centerY = bounds.getMinY() + bounds.getHeight() / 2;
+
+                for (int i = 0; i < 10; i++) {
+                    Circle confetti = new Circle(1.5, Color.hsb(rand.nextDouble() * 360, 1.0, 1.0));
+                    confetti.setTranslateX(centerX);
+                    confetti.setTranslateY(centerY);
+                    overlay.getChildren().add(confetti);
+
+                    double angle = rand.nextDouble() * 2 * Math.PI;
+                    double distance = 80 + rand.nextDouble() * 40;
+                    double dx = Math.cos(angle) * distance;
+                    double dy = Math.sin(angle) * distance;
+
+                    TranslateTransition move = new TranslateTransition(Duration.millis(1200), confetti);
+                    move.setByX(dx);
+                    move.setByY(dy);
+
+                    FadeTransition fade = new FadeTransition(Duration.millis(1000), confetti);
+                    fade.setToValue(0);
+
+                    ParallelTransition p = new ParallelTransition(move, fade);
+                    p.setOnFinished(e -> overlay.getChildren().remove(confetti));
+                    p.play();
+                }
+            }
+        }
+    }
+
+    public void finalAscension() {
+        for (Label[] rowLabels : labels) {
+            for (Label label : rowLabels) {
+                if (label == null) continue;
+
+                TranslateTransition rise = new TranslateTransition(Duration.seconds(2), label);
+                rise.setByY(-300);
+                FadeTransition fade = new FadeTransition(Duration.seconds(2), label);
+                fade.setToValue(0);
+                ParallelTransition p = new ParallelTransition(rise, fade);
+                p.setOnFinished(e -> label.setVisible(false));
+                p.play();
+            }
+        }
+    }
+
+
+    public void playVictorySequence() {
+        illuminateSpiralGrid();
+
+        PauseTransition pause1 = new PauseTransition(Duration.seconds(0.5));
+        pause1.setOnFinished(e -> animateRainbowCycle());
+
+        PauseTransition pause2 = new PauseTransition(Duration.seconds(2.5));
+        pause2.setOnFinished(e -> centralPulseWave());
+
+        PauseTransition pause3 = new PauseTransition(Duration.seconds(1));
+        pause3.setOnFinished(e -> explodeConfettiWave());
+
+        PauseTransition pause4 = new PauseTransition(Duration.seconds(1));
+        pause4.setOnFinished(e -> finalAscension());
+
+        PauseTransition pause5 = new PauseTransition(Duration.seconds(2));
+        pause5.setOnFinished(e -> backToHome());
+
+        SequentialTransition seq = new SequentialTransition(pause1, pause2, pause3, pause4, pause5);
+        seq.play();
     }
 
 }

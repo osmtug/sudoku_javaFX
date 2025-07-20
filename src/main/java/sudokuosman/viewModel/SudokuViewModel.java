@@ -77,4 +77,8 @@ public class SudokuViewModel {
     public boolean numberIsComplete(int val){
         return model.numberIsComplete(val);
     }
+
+    public boolean isFinished(){
+        return model.isGridValid();
+    }
 }
