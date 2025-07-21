@@ -58,6 +58,9 @@ public class AccueilController {
 
                 Stage stage = (Stage) ((javafx.scene.Node) e.getSource()).getScene().getWindow();
 
+                OptionsController controller = loader.getController();
+                controller.setStage(stage);
+
                 stage.setScene(new Scene(root));
 
             } catch (IOException ex) {

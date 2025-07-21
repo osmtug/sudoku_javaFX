@@ -25,6 +25,7 @@ public class OptionsController {
     private CheckBox darkModeCheckBox;
     @FXML
     private ComboBox<SudokuOption.ColorPalettName> comboPalette;
+    private Stage mainStage;
 
     @FXML
     public void initialize() {
@@ -113,6 +114,14 @@ public class OptionsController {
             );
             playSpringAnimation(btn, false);
         });
+    }
+
+    public void setStage(Stage stage){
+        this.mainStage = stage;
+        mainStage.setMinHeight(250);
+        mainStage.setMinWidth(300);
+        mainStage.setHeight(250);
+        mainStage.setWidth(300);
     }
 
     private void playSpringAnimation(Control button, boolean grow) {
