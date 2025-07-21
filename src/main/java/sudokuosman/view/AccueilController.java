@@ -144,5 +144,7 @@ public class AccueilController {
         this.mainStage = stage;
         mainStage.setMinHeight(226);
         mainStage.setMinWidth(276);
+        mainStage.setHeight(226);
+        mainStage.setWidth(276);
     }
 }

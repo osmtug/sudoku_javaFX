@@ -345,6 +345,7 @@ public class SudokuController {
     }
 
     private void setValue(int val){
+        if (viewModel.getHealth() == 0) { return; }
         int res = viewModel.setValueIsCorrect(selectedRow, selectedCol, val);
         if ( res == 0){
             viewModel.decrementHealth();
