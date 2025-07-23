@@ -1,5 +1,6 @@
 package sudokuosman.view;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -83,7 +84,29 @@ public class SudokuController {
                     setValue(val);
                 }
             }
+
+            switch (event.getCode()){
+                case DOWN -> {
+                    if (selectedRow + 1 < SIZE && selectedRow >= 0)
+                        selectCell(selectedRow+1, selectedCol);
+                }
+                case UP -> {
+                    if (selectedRow < SIZE && selectedRow-1 >= 0)
+                        selectCell(selectedRow-1, selectedCol);
+                }
+                case LEFT -> {
+                    if (selectedCol < SIZE && selectedCol-1 >= 0)
+                        selectCell(selectedRow, selectedCol-1);
+                }
+                case RIGHT -> {
+                    if (selectedCol + 1 < SIZE && selectedCol >= 0)
+                        selectCell(selectedRow, selectedCol+1);
+                }
+            }
         });
+        vBoxMain.setFocusTraversable(true);
+
+        Platform.runLater(() -> vBoxMain.requestFocus());
 
         switchContainer.setOnMouseClicked(e -> toggleSwitch());
 
