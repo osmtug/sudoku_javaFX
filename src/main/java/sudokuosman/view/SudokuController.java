@@ -42,6 +42,7 @@ public class SudokuController {
 
     private Timeline timeline;
     private int seconds = 0;
+    private boolean cantPlay;
 
     @FXML
     private GridPane gridPane;
@@ -78,7 +79,7 @@ public class SudokuController {
             if (event.getCode() == KeyCode.SPACE) { return; }
             String key = event.getText();
 
-            if (key.matches("[1-9]")) {
+            if (key.matches("[0-9]")) {
                 if (selectedRow != -1 && selectedCol != -1) {
                     int val = Integer.parseInt(key);
                     setValue(val);
@@ -162,6 +163,8 @@ public class SudokuController {
         }
 
         setStyle();
+
+        cantPlay = false;
 
         startTimer();
     }
@@ -368,7 +371,7 @@ public class SudokuController {
     }
 
     private void setValue(int val){
-        if (viewModel.getHealth() == 0) { return; }
+        if (cantPlay) { return; }
         int res = viewModel.setValueIsCorrect(selectedRow, selectedCol, val);
         if ( res == 0){
             viewModel.decrementHealth();
@@ -377,6 +380,7 @@ public class SudokuController {
             }else if (viewModel.getHealth() == 1){
                 shakeAllLabels(700, 8);
             }else{
+                cantPlay = true;
                 stopTimer();
                 gameOverAnimation();
             }
@@ -390,6 +394,7 @@ public class SudokuController {
         }
 
         if (viewModel.isFinished()){
+            cantPlay = true;
             playVictorySequence();
         }
 
