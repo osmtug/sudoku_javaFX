@@ -67,6 +67,9 @@ public class SudokuController {
     private int selectedRow = -1;
     private int selectedCol = -1;
 
+    private SequentialTransition victorySequence;
+    private Timeline gameOverTimeline;
+
     private Stage stage;
 
 
@@ -442,12 +445,25 @@ public class SudokuController {
             Stage stage = (Stage) vBoxMain.getScene().getWindow();
 
             AccueilController controller = loader.getController();
+            stopAllAnimations();
             controller.setStage(stage);
 
             stage.setScene(new Scene(root));
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void stopAllAnimations() {
+        if (victorySequence != null) {
+            victorySequence.stop();
+        }
+
+        if (gameOverTimeline != null) {
+            gameOverTimeline.stop();
+        }
+
+        // Ajoute ici toute autre animation potentielle
     }
 
     public void startTimer() {
@@ -537,8 +553,8 @@ public class SudokuController {
 
         int[] currentFrame = {0};
 
-        Timeline trembleTimeline = new Timeline();
-        trembleTimeline.setCycleCount(Timeline.INDEFINITE);
+        gameOverTimeline = new Timeline();
+        gameOverTimeline.setCycleCount(Timeline.INDEFINITE);
 
         KeyFrame trembleFrame = new KeyFrame(Duration.millis(frameInterval), e -> {
             double progress = (double) currentFrame[0] / totalFrames;
@@ -564,13 +580,13 @@ public class SudokuController {
 
             currentFrame[0]++;
             if (currentFrame[0] >= totalFrames) {
-                trembleTimeline.stop();
+                gameOverTimeline.stop();
                 moveToCenterWithTremble(rand, centerX, centerY);
             }
         });
 
-        trembleTimeline.getKeyFrames().add(trembleFrame);
-        trembleTimeline.play();
+        gameOverTimeline.getKeyFrames().add(trembleFrame);
+        gameOverTimeline.play();
     }
 
     private void moveToCenterWithTremble(Random rand, double centerX, double centerY) {
@@ -707,7 +723,7 @@ public class SudokuController {
             // Si tous les labels sont sortis, stoppe l’animation
             if (allOut) {
                 timeline.stop();
-                backToHome();  // ou autre action
+                backToHome();
             }
         });
 
@@ -954,8 +970,8 @@ public class SudokuController {
         PauseTransition pause5 = new PauseTransition(Duration.seconds(2));
         pause5.setOnFinished(e -> backToHome());
 
-        SequentialTransition seq = new SequentialTransition(pause1, pause2, pause3, pause4, pause5);
-        seq.play();
+        victorySequence  = new SequentialTransition(pause1, pause2, pause3, pause4, pause5);
+        victorySequence .play();
     }
 
 }
