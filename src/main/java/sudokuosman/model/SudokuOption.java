@@ -15,6 +15,7 @@ public class SudokuOption {
     }
 
     public enum DifficultyLevel{
+        TesteMode,
         Easy,
         Medium,
         Difficult,
@@ -31,6 +32,7 @@ public class SudokuOption {
 
     public static int getNbEmptyCell(){
         switch (difficultyLevel){
+            case TesteMode -> { return 5; }
             case Easy -> { return 35; }
             case Medium -> { return 42; }
             case Difficult -> { return 50; }
