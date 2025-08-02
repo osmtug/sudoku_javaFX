@@ -440,15 +440,19 @@ public class SudokuController {
 
     public void backToHome(){
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sudokuosman/accueil.fxml"));
-            Parent root = loader.load();
             Stage stage = (Stage) vBoxMain.getScene().getWindow();
+            if (stage != null){
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/sudokuosman/accueil.fxml"));
+                Parent root = loader.load();
 
-            AccueilController controller = loader.getController();
-            stopAllAnimations();
-            controller.setStage(stage);
+                AccueilController controller = loader.getController();
+                stopAllAnimations();
+                controller.setStage(stage);
 
-            stage.setScene(new Scene(root));
+                stage.setScene(new Scene(root));
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
