@@ -953,12 +953,12 @@ public class SudokuController {
 
 
     public void playVictorySequence() {
-        illuminateSpiralGrid();
+        animateRainbowCycle();
 
         PauseTransition pause1 = new PauseTransition(Duration.seconds(0.5));
-        pause1.setOnFinished(e -> animateRainbowCycle());
+        pause1.setOnFinished(e -> illuminateSpiralGrid());
 
-        PauseTransition pause2 = new PauseTransition(Duration.seconds(2.5));
+        PauseTransition pause2 = new PauseTransition(Duration.seconds(3.2));
         pause2.setOnFinished(e -> centralPulseWave());
 
         PauseTransition pause3 = new PauseTransition(Duration.seconds(1));
