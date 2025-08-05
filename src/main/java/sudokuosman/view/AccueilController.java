@@ -16,6 +16,7 @@ import sudokuosman.model.SudokuOption;
 
 import java.io.IOException;
 
+@SuppressWarnings("CallToPrintStackTrace")
 public class AccueilController {
 
     public Stage mainStage;

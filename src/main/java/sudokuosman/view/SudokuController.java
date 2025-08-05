@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -26,10 +25,7 @@ import sudokuosman.model.SudokuOption;
 import sudokuosman.viewModel.SudokuViewModel;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class SudokuController {
 
@@ -69,8 +65,6 @@ public class SudokuController {
 
     private SequentialTransition victorySequence;
     private Timeline gameOverTimeline;
-
-    private Stage stage;
 
 
     public void initialize() {
@@ -114,13 +108,9 @@ public class SudokuController {
 
         switchContainer.setOnMouseClicked(e -> toggleSwitch());
 
-        btnRetour.setOnMouseClicked(event -> {
-            backToHome();
-        });
+        btnRetour.setOnMouseClicked(event -> backToHome());
 
-        vBoxMain.setOnMouseClicked(event -> {
-            selectCell(-1, -1);
-        });
+        vBoxMain.setOnMouseClicked(event -> selectCell(-1, -1));
 
         // Création des labels et binding unidirectionnel
         for (int row = 0; row < SIZE; row++) {
@@ -185,15 +175,6 @@ public class SudokuController {
                 setValue(val);
             }
 
-            Scene scene = ((Node) e.getSource()).getScene();
-
-            // Récupérer la fenêtre (stage) depuis la scène
-            Stage stage = (Stage) scene.getWindow();
-
-            // Récupérer largeur et hauteur de la fenêtre
-            double width = stage.getWidth();
-            double height = stage.getHeight();
-
         });
         return btn;
     }
@@ -237,35 +218,35 @@ public class SudokuController {
             }
         }
         List<int[]> selectedZone = viewModel.getSelectedZone(selectedRow, selectedCol);
-        for (int i = 0; i < selectedZone.size(); i++){
-            int row = selectedZone.get(i)[0];
-            int col = selectedZone.get(i)[1];
+        for (int[] value : selectedZone) {
+            int row = value[0];
+            int col = value[1];
 
             labels[row][col].setStyle(
-                    "-fx-background-color: "+ SudokuOption.getselectedZoneColor() +";" +
-                            "-fx-text-fill: "+ getNumberColor(row, col) +";" +
+                    "-fx-background-color: " + SudokuOption.getselectedZoneColor() + ";" +
+                            "-fx-text-fill: " + getNumberColor(row, col) + ";" +
                             "-fx-font-weight: bold;" +
                             " -fx-alignment: center;" +
                             "-fx-font-size: 18;" +
                             getBorderThickness(row, col) +
-                            "-fx-border-color: "+ SudokuOption.getNumberColor() +";" +
+                            "-fx-border-color: " + SudokuOption.getNumberColor() + ";" +
                             "-fx-border-radius: 5px;" +
                             "-fx-background-radius: 5px;"
             );
         }
 
         List<int[]> sameNumber = viewModel.getSameNumber(selectedRow, selectedCol);
-        for (int i = 0; i < sameNumber.size(); i++){
-            int row = sameNumber.get(i)[0];
-            int col = sameNumber.get(i)[1];
+        for (int[] ints : sameNumber) {
+            int row = ints[0];
+            int col = ints[1];
             labels[row][col].setStyle(
-                    "-fx-background-color: "+ SudokuOption.getSameNumberColor() +";" +
-                            "-fx-text-fill: "+ getNumberColor(row, col) +";" +
+                    "-fx-background-color: " + SudokuOption.getSameNumberColor() + ";" +
+                            "-fx-text-fill: " + getNumberColor(row, col) + ";" +
                             "-fx-font-weight: bold;" +
                             " -fx-alignment: center;" +
                             "-fx-font-size: 18;" +
                             getBorderThickness(row, col) +
-                            "-fx-border-color: "+ SudokuOption.getNumberColor() +";" +
+                            "-fx-border-color: " + SudokuOption.getNumberColor() + ";" +
                             "-fx-border-radius: 5px;" +
                             "-fx-background-radius: 5px;"
             );
@@ -363,18 +344,15 @@ public class SudokuController {
     }
 
     private String getNumberColor(int row, int col){
-        switch (viewModel.getNumberColor(row, col)){
-            case 1 :
-                return "blue";
-            case -1:
-                return "red";
-            default:
-                return SudokuOption.getNumberColor().toString();
-        }
+        return switch (viewModel.getNumberColor(row, col)) {
+            case 1 -> "blue";
+            case -1 -> "red";
+            default -> SudokuOption.getNumberColor().toString();
+        };
     }
 
     private void setValue(int val){
-        if (cantPlay) { return; }
+        if (cantPlay || !selectedCellIsInGrid()) { return; }
         int res = viewModel.setValueIsCorrect(selectedRow, selectedCol, val);
         if ( res == 0){
             viewModel.decrementHealth();
@@ -404,6 +382,10 @@ public class SudokuController {
         setStyle();
     }
 
+    private boolean selectedCellIsInGrid() {
+        return selectedRow < SIZE && selectedRow >= 0 && selectedCol < SIZE && selectedCol >= 0;
+    }
+
 
     public void updateHearts(int nbCoeurs) {
         // Clamp the value to [0, 3]
@@ -416,7 +398,7 @@ public class SudokuController {
         // Update each heart
         heart1.setImage(nbCoeurs >= 1 ? fullHeart : emptyHeart);
         heart2.setImage(nbCoeurs >= 2 ? fullHeart : emptyHeart);
-        heart3.setImage(nbCoeurs >= 3 ? fullHeart : emptyHeart);
+        heart3.setImage(nbCoeurs == 3 ? fullHeart : emptyHeart);
     }
 
     private void toggleSwitch() {
@@ -431,13 +413,13 @@ public class SudokuController {
     }
 
     public void setStage(Stage stage){
-        this.stage = stage;
         stage.setMinHeight(500);
         stage.setMinWidth(505);
         stage.setHeight(700);
         stage.setWidth(650);
     }
 
+    @SuppressWarnings("CallToPrintStackTrace")
     public void backToHome(){
         try {
             Stage stage = (Stage) vBoxMain.getScene().getWindow();
@@ -509,9 +491,8 @@ public class SudokuController {
             double progress = (double) currentFrame[0] / totalFrames;
             double intensity = initialIntensity * (1.0 - progress); // diminue progressivement
 
-            for (int row = 0; row < labels.length; row++) {
-                for (int col = 0; col < labels[row].length; col++) {
-                    Label label = labels[row][col];
+            for (Label[] value : labels) {
+                for (Label label : value) {
                     if (label == null) continue;
 
                     double dx = (rand.nextDouble() * 2 - 1) * intensity;
@@ -528,9 +509,8 @@ public class SudokuController {
             if (currentFrame[0] >= totalFrames) {
                 timeline.stop();
                 // Remise en position normale
-                for (int row = 0; row < labels.length; row++) {
-                    for (int col = 0; col < labels[row].length; col++) {
-                        Label label = labels[row][col];
+                for (Label[] value : labels) {
+                    for (Label label : value) {
                         if (label != null) {
                             label.setTranslateX(0);
                             label.setTranslateY(0);
@@ -564,9 +544,8 @@ public class SudokuController {
             double progress = (double) currentFrame[0] / totalFrames;
             double intensity = maxIntensity * (1 - progress);  // <-- ATTENUATION ici
 
-            for (int row = 0; row < labels.length; row++) {
-                for (int col = 0; col < labels[row].length; col++) {
-                    Label label = labels[row][col];
+            for (Label[] value : labels) {
+                for (Label label : value) {
                     if (label == null) continue;
 
                     label.textProperty().unbind();
@@ -607,9 +586,8 @@ public class SudokuController {
             double progress = (double) currentFrame[0] / totalFrames;
             double intensity = maxTrembleIntensity * progress+4; // Tremblement augmente
 
-            for (int row = 0; row < labels.length; row++) {
-                for (int col = 0; col < labels[row].length; col++) {
-                    Label label = labels[row][col];
+            for (Label[] value : labels) {
+                for (Label label : value) {
                     if (label == null) continue;
 
                     label.textProperty().unbind();
@@ -638,7 +616,7 @@ public class SudokuController {
             currentFrame[0]++;
             if (currentFrame[0] >= totalFrames) {
                 timeline.stop();
-                explosionWithGravity(rand, centerX, centerY);
+                explosionWithGravity(rand);
             }
         });
 
@@ -647,15 +625,14 @@ public class SudokuController {
     }
 
 
-    private void explosionWithGravity(Random rand, double centerX, double centerY) {
-        int durationMillis = 3000;
+    private void explosionWithGravity(Random rand) {
         int frameInterval = 30;
-        int totalFrames = durationMillis / frameInterval;
-        int[] currentFrame = {0};
 
         // Pour stocker la vitesse initiale de chaque label (dx, dy, rotationSpeed)
         class Velocity {
-            double vx, vy, vr;
+            final double vx;
+            double vy;
+            final double vr;
             Velocity(double vx, double vy, double vr) {
                 this.vx = vx;
                 this.vy = vy;
@@ -707,16 +684,7 @@ public class SudokuController {
                     // Récupérer la position du label dans la scène
                     Point2D scenePos = label.localToScene(0, 0);
 
-                    double x = scenePos.getX();
-                    double y = scenePos.getY();
-
-                    // Récupérer la taille de la fenêtre (ou de ton conteneur visible)
-                    double sceneWidth = label.getScene().getWidth();
-                    double sceneHeight = label.getScene().getHeight();
-
-                    // Vérifier si le label est toujours visible dans la scène (avec un margin)
-                    boolean visible = x >= -label.getWidth() && x <= sceneWidth + label.getWidth() &&
-                            y >= -label.getHeight() && y <= sceneHeight + label.getHeight();
+                    boolean visible = isVisible(scenePos, label);
 
                     if (visible) {
                         allOut = false;  // Au moins un label est encore visible
@@ -733,6 +701,19 @@ public class SudokuController {
 
         timeline.getKeyFrames().add(frame);
         timeline.play();
+    }
+
+    private static boolean isVisible(Point2D scenePos, Label label) {
+        double x = scenePos.getX();
+        double y = scenePos.getY();
+
+        // Récupérer la taille de la fenêtre (ou de ton conteneur visible)
+        double sceneWidth = label.getScene().getWidth();
+        double sceneHeight = label.getScene().getHeight();
+
+        // Vérifier si le label est toujours visible dans la scène (avec un margin)
+        return x >= -label.getWidth() && x <= sceneWidth + label.getWidth() &&
+                y >= -label.getHeight() && y <= sceneHeight + label.getHeight();
     }
 
 
@@ -780,36 +761,15 @@ public class SudokuController {
         pulse.play();
     }
 
-    private void playShockTremble(Label label) {
-        Random rand = new Random();
-        Timeline tremble = new Timeline();
-        tremble.setCycleCount(5); // 5 secousses rapides
-
-        tremble.getKeyFrames().add(new KeyFrame(Duration.millis(30), e -> {
-            double dx = (rand.nextDouble() * 2 - 1) * 5;
-            double dy = (rand.nextDouble() * 2 - 1) * 5;
-            label.setTranslateX(dx);
-            label.setTranslateY(dy);
-        }));
-
-        tremble.setOnFinished(e -> {
-            label.setTranslateX(0);
-            label.setTranslateY(0);
-        });
-
-        tremble.play();
-    }
-
     public void illuminateSpiralGrid() {
         int rows = labels.length;
         int cols = labels[0].length;
-        boolean[][] visited = new boolean[rows][cols];
         List<Label> spiralOrder = new ArrayList<>();
 
         int top = 0, bottom = rows - 1, left = 0, right = cols - 1;
 
         while (top <= bottom && left <= right) {
-            for (int j = left; j <= right; j++) spiralOrder.add(labels[top][j]);
+            spiralOrder.addAll(Arrays.asList(labels[top]).subList(left, right + 1));
             top++;
             for (int i = top; i <= bottom; i++) spiralOrder.add(labels[i][right]);
             right--;

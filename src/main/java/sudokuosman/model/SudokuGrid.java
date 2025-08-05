@@ -7,10 +7,10 @@ import java.util.Random;
 
 public class SudokuGrid {
     private final int SIZE = 9;
-    private int[][] grid;
-    private int[][] solution;
-    private int [][] numberColor; // 0 = normal Color / 1 = blue color for correct guess / -1  = red color for wrong guess
-    private Random rand = new Random();
+    private final int[][] grid;
+    private final int[][] solution;
+    private final int [][] numberColor; // 0 = normal Color / 1 = blue color for correct guess / -1  = red color for wrong guess
+    private final Random rand = new Random();
     private int health = 3;
 
     public SudokuGrid() {
@@ -38,7 +38,7 @@ public class SudokuGrid {
     }
 
     public List<int[]> getSameNumber(int row, int col){
-        List<int[]> res = new ArrayList<int[]>();
+        List<int[]> res = new ArrayList<>();
         if (row < 0 || row > 8 || col < 0 || col > 8) return res;
         int val = grid[row][col];
         if (val < 1 || val > 9) return res;
@@ -54,8 +54,6 @@ public class SudokuGrid {
 
     public int getNumberColor(int row, int col){ return numberColor[row][col]; }
 
-    public void setNumberColor(int row, int col, int val){ numberColor[row][col] = val; }
-
     public boolean numberIsComplete(int number){
         if (number == 0) return false;
         int count = 0;
@@ -70,10 +68,12 @@ public class SudokuGrid {
     }
 
     public int updateNumberColor(int row, int col){
-        if (grid[row][col] == solution[row][col] || grid[row][col] == 0){
+        if (grid[row][col] == solution[row][col]){
             numberColor[row][col] = 1;
             return 1;
-        }else{
+        }else if(grid[row][col] == 0) {
+            return 1;
+        }else {
             numberColor[row][col] = -1;
             return 0;
         }
@@ -84,7 +84,7 @@ public class SudokuGrid {
     public void decrementHealth() { this.health--;}
 
     public List<int[]> getSelectedZone(int row, int col){
-        List<int[]> res = new ArrayList<int[]>();
+        List<int[]> res = new ArrayList<>();
         if (row < 0 || row > 8 || col < 0 || col > 8) return res;
         for (int i = 0; i < grid.length; i++){
             for (int j = 0; j < grid[i].length; j++){

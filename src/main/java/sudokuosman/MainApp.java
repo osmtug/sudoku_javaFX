@@ -7,11 +7,13 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import sudokuosman.view.AccueilController;
 
+import java.util.Objects;
+
 public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo2.png")));
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/logo2.png"))));
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Accueil.fxml"));
         Scene scene = new Scene(loader.load());
 

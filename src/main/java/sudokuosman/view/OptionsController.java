@@ -25,7 +25,6 @@ public class OptionsController {
     private CheckBox darkModeCheckBox;
     @FXML
     private ComboBox<SudokuOption.ColorPalettName> comboPalette;
-    private Stage mainStage;
 
     @FXML
     public void initialize() {
@@ -49,9 +48,7 @@ public class OptionsController {
             SudokuOption.colorPalett = comboPalette.getValue();
             setStyle();
         });
-        comboDifficulty.setOnAction(event -> {
-            SudokuOption.difficultyLevel = comboDifficulty.getValue();
-        });
+        comboDifficulty.setOnAction(event -> SudokuOption.difficultyLevel = comboDifficulty.getValue());
     }
 
     @FXML
@@ -66,6 +63,7 @@ public class OptionsController {
 
             stage.setScene(new Scene(root));
         } catch (IOException e) {
+            //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
     }
@@ -117,11 +115,10 @@ public class OptionsController {
     }
 
     public void setStage(Stage stage){
-        this.mainStage = stage;
-        mainStage.setMinHeight(250);
-        mainStage.setMinWidth(300);
-        mainStage.setHeight(250);
-        mainStage.setWidth(300);
+        stage.setMinHeight(250);
+        stage.setMinWidth(300);
+        stage.setHeight(250);
+        stage.setWidth(300);
     }
 
     private void playSpringAnimation(Control button, boolean grow) {
