@@ -542,7 +542,7 @@ public class SudokuController {
 
         KeyFrame trembleFrame = new KeyFrame(Duration.millis(frameInterval), e -> {
             double progress = (double) currentFrame[0] / totalFrames;
-            double intensity = maxIntensity * (1 - progress);  // <-- ATTENUATION ici
+            double intensity = maxIntensity * (1 - progress);
 
             for (Label[] value : labels) {
                 for (Label label : value) {
