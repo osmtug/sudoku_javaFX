@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -449,7 +450,19 @@ public class SudokuController {
                 stopAllAnimations();
                 controller.setStage(stage);
 
-                stage.setScene(new Scene(root));
+                Scene scene = new Scene(root);
+
+                Image cursorImage = new Image(
+                        getClass().getResourceAsStream("/images/cursor.png")
+                );
+                ImageCursor sudokuCursor = new ImageCursor(
+                        cursorImage,
+                        0,
+                        0
+                );
+
+                scene.setCursor(sudokuCursor);
+                stage.setScene(scene);
             }
 
 

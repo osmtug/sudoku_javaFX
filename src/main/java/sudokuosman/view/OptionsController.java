@@ -5,9 +5,11 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.ImageCursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -64,7 +66,19 @@ public class OptionsController {
             AccueilController controller = loader.getController();
             controller.setStage(stage);
 
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+
+            Image cursorImage = new Image(
+                    getClass().getResourceAsStream("/images/cursor.png")
+            );
+            ImageCursor sudokuCursor = new ImageCursor(
+                    cursorImage,
+                    0,
+                    0
+            );
+
+            scene.setCursor(sudokuCursor);
+            stage.setScene(scene);
         } catch (IOException e) {
             e.printStackTrace();
         }
