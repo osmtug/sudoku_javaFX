@@ -16,6 +16,7 @@ import javafx.util.Duration;
 import sudokuosman.model.SudokuOption;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class OptionsController {
 
@@ -66,7 +67,7 @@ public class OptionsController {
             Scene scene = new Scene(root);
 
             Image cursorImage = new Image(
-                    getClass().getResourceAsStream("/images/cursor.png")
+                    Objects.requireNonNull(getClass().getResourceAsStream("/images/cursor.png"))
             );
             ImageCursor sudokuCursor = new ImageCursor(
                     cursorImage,

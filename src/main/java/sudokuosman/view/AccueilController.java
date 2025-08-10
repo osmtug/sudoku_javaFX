@@ -17,6 +17,7 @@ import javafx.util.Duration;
 import sudokuosman.model.SudokuOption;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @SuppressWarnings("CallToPrintStackTrace")
 public class AccueilController {
@@ -50,7 +51,7 @@ public class AccueilController {
                 Scene scene = new Scene(root);
 
                 Image cursorImage = new Image(
-                        getClass().getResourceAsStream("/images/cursor.png")
+                        Objects.requireNonNull(getClass().getResourceAsStream("/images/cursor.png"))
                 );
                 ImageCursor sudokuCursor = new ImageCursor(
                         cursorImage,
@@ -79,7 +80,7 @@ public class AccueilController {
                 Scene scene = new Scene(root);
 
                 Image cursorImage = new Image(
-                        getClass().getResourceAsStream("/images/cursor.png")
+                        Objects.requireNonNull(getClass().getResourceAsStream("/images/cursor.png"))
                 );
                 ImageCursor sudokuCursor = new ImageCursor(
                         cursorImage,
