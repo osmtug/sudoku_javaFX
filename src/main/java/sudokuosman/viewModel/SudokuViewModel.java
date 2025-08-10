@@ -7,35 +7,28 @@ import sudokuosman.model.SudokuGrid;
 import java.util.List;
 
 public class SudokuViewModel {
-    private final int SIZE = 9;
-    private IntegerProperty[][] cells;
-    private SudokuGrid model;
+    private final IntegerProperty[][] cells;
+    private final SudokuGrid model;
 
     public SudokuViewModel() {
         model = new SudokuGrid();  // Instance du modèle
-        cells = new IntegerProperty[SIZE][SIZE];
+        cells = new IntegerProperty[model.getSize()][model.getSize()];
 
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
+        for (int i = 0; i < model.getSize(); i++) {
+            for (int j = 0; j < model.getSize(); j++) {
                 int row = i;
                 int col = j;
                 // initialiser la property avec la valeur du modèle
                 cells[i][j] = new SimpleIntegerProperty(model.getValue(row, col));
 
                 // Quand on change la propriété, on met à jour le modèle
-                cells[i][j].addListener((obs, oldVal, newVal) -> {
-                    model.setValue(row, col, newVal.intValue());
-                });
+                cells[i][j].addListener((obs, oldVal, newVal) -> model.setValue(row, col, newVal.intValue()));
             }
         }
     }
 
     public IntegerProperty cellProperty(int row, int col) {
         return cells[row][col];
-    }
-
-    public int getValue(int row, int col) {
-        return model.getValue(row, col);
     }
 
     public int getNumberColor(int row, int col) { return model.getNumberColor(row, col); }
@@ -53,18 +46,6 @@ public class SudokuViewModel {
     public int getHealth() { return model.getHealth(); }
 
     public void decrementHealth() { model.decrementHealth();}
-
-    public SudokuGrid getModel() {
-        return model;
-    }
-
-    public void refresh() {
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                cells[i][j].set(model.getValue(i, j));
-            }
-        }
-    }
 
     public List<int[]> getSelectedZone(int row, int col){
         return model.getSelectedZone(row, col);
