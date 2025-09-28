@@ -2,7 +2,6 @@ package sudokuosman;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -17,17 +16,6 @@ public class MainApp extends Application {
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/logo2.png"))));
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Accueil.fxml"));
         Scene scene = new Scene(loader.load());
-
-        Image cursorImage = new Image(
-                getClass().getResourceAsStream("/images/cursor.png")
-        );
-        ImageCursor sudokuCursor = new ImageCursor(
-                cursorImage,
-                0,
-                0
-        );
-
-        scene.setCursor(sudokuCursor);
 
         AccueilController controller = loader.getController();
         controller.setStage(primaryStage);
