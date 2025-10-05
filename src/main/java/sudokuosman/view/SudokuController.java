@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -46,6 +45,12 @@ public class SudokuController {
     @FXML
     private HBox numberButtons;
 
+    @FXML
+    private StackPane root;
+
+    @FXML
+    private Pane overlay;
+
     @FXML private Circle thumb;
     @FXML private StackPane switchContainer;
     @FXML private Rectangle track;
@@ -66,8 +71,12 @@ public class SudokuController {
     private SequentialTransition victorySequence;
     private Timeline gameOverTimeline;
 
+    private FireworksManager fireworksManager;
+
 
     public void initialize() {
+        fireworksManager = new FireworksManager(overlay);
+
         viewModel = new SudokuViewModel();
         labels = new Label[SIZE][SIZE];
         buttons = new Button[SIZE+1];
@@ -860,60 +869,60 @@ public class SudokuController {
         }
     }
 
-    public void explodeConfettiWave() {
-        Pane overlay = new Pane();
-        gridPane.getChildren().add(overlay);
-        overlay.setMouseTransparent(true);
+    public void explodeConfetti(int totalFireworks, double showDuration) {
+        double sceneWidth = root.getWidth();
+        double sceneHeight = root.getHeight();
 
-        Random rand = new Random();
+        Random random = new Random();
 
-        for (Label[] rowLabels : labels) {
-            for (Label label : rowLabels) {
-                if (label == null) continue;
+        for (int i = 0; i < totalFireworks; i++) {
+            double startX = 50 + random.nextDouble() * (sceneWidth - 100);
+            double delaySeconds = random.nextDouble() * showDuration;
 
-                Bounds bounds = label.localToScene(label.getBoundsInLocal());
-                double centerX = bounds.getMinX() + bounds.getWidth() / 2;
-                double centerY = bounds.getMinY() + bounds.getHeight() / 2;
-
-                for (int i = 0; i < 10; i++) {
-                    Circle confetti = new Circle(1.5, Color.hsb(rand.nextDouble() * 360, 1.0, 1.0));
-                    confetti.setTranslateX(centerX);
-                    confetti.setTranslateY(centerY);
-                    overlay.getChildren().add(confetti);
-
-                    double angle = rand.nextDouble() * 2 * Math.PI;
-                    double distance = 80 + rand.nextDouble() * 40;
-                    double dx = Math.cos(angle) * distance;
-                    double dy = Math.sin(angle) * distance;
-
-                    TranslateTransition move = new TranslateTransition(Duration.millis(1200), confetti);
-                    move.setByX(dx);
-                    move.setByY(dy);
-
-                    FadeTransition fade = new FadeTransition(Duration.millis(1000), confetti);
-                    fade.setToValue(0);
-
-                    ParallelTransition p = new ParallelTransition(move, fade);
-                    p.setOnFinished(e -> overlay.getChildren().remove(confetti));
-                    p.play();
-                }
-            }
+            PauseTransition pause = new PauseTransition(Duration.seconds(delaySeconds));
+            pause.setOnFinished(e -> fireworksManager.launchFirework(startX, sceneHeight));
+            pause.play();
         }
     }
 
     public void finalAscension() {
+        List<Label> labelList = new ArrayList<>();
         for (Label[] rowLabels : labels) {
             for (Label label : rowLabels) {
-                if (label == null) continue;
-
-                TranslateTransition rise = new TranslateTransition(Duration.seconds(2), label);
-                rise.setByY(-300);
-                FadeTransition fade = new FadeTransition(Duration.seconds(2), label);
-                fade.setToValue(0);
-                ParallelTransition p = new ParallelTransition(rise, fade);
-                p.setOnFinished(e -> label.setVisible(false));
-                p.play();
+                if (label != null) labelList.add(label);
             }
+        }
+
+        Collections.shuffle(labelList);
+
+        Random random = new Random();
+
+        double accumulatedDelay = 0;
+
+        for (Label label : labelList) {
+            double delay = random.nextDouble() * 0.1;
+            accumulatedDelay += delay;
+
+            double duration = 1.5 + random.nextDouble() * 1.0;
+
+            double riseDistance = 200 + random.nextDouble() * 150;
+
+            double rotation = (random.nextDouble() - 0.5) * 300; // -30° à 30°
+
+            TranslateTransition rise = new TranslateTransition(Duration.seconds(duration), label);
+            rise.setByY(-riseDistance);
+
+            RotateTransition rotate = new RotateTransition(Duration.seconds(duration), label);
+            rotate.setByAngle(rotation);
+
+            FadeTransition fade = new FadeTransition(Duration.seconds(duration), label);
+            fade.setToValue(0);
+
+            ParallelTransition p = new ParallelTransition(rise, rotate, fade);
+            p.setDelay(Duration.seconds(accumulatedDelay));
+            p.setOnFinished(e -> label.setVisible(false));
+
+            p.play();
         }
     }
 
@@ -928,12 +937,12 @@ public class SudokuController {
         pause2.setOnFinished(e -> centralPulseWave());
 
         PauseTransition pause3 = new PauseTransition(Duration.seconds(1));
-        pause3.setOnFinished(e -> explodeConfettiWave());
+        pause3.setOnFinished(e -> explodeConfetti(35, 4));
 
         PauseTransition pause4 = new PauseTransition(Duration.seconds(1));
         pause4.setOnFinished(e -> finalAscension());
 
-        PauseTransition pause5 = new PauseTransition(Duration.seconds(2));
+        PauseTransition pause5 = new PauseTransition(Duration.seconds(7));
         pause5.setOnFinished(e -> backToHome());
 
         victorySequence  = new SequentialTransition(pause1, pause2, pause3, pause4, pause5);

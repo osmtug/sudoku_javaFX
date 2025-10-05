@@ -13,60 +13,61 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.layout.Region?>
-<VBox fx:id="vBoxMain" xmlns:fx="http://javafx.com/fxml" fx:controller="sudokuosman.view.SudokuController" spacing="10" alignment="TOP_LEFT" >
+<?import javafx.scene.layout.Pane?>
+<StackPane fx:id="root" xmlns:fx="http://javafx.com/fxml" fx:controller="sudokuosman.view.SudokuController">
+    <VBox fx:id="vBoxMain" spacing="10">
 
-    <HBox spacing="10" alignment="CENTER" HBox.hgrow="ALWAYS">
-        <!-- Bouton retour à gauche -->
-        <Button fx:id="btnRetour" text="←" prefWidth="35" alignment="center"/>
+        <HBox spacing="10" alignment="CENTER" HBox.hgrow="ALWAYS">
+            <!-- Bouton retour à gauche -->
+            <Button fx:id="btnRetour" text="←" prefWidth="35" alignment="center"/>
 
-        <!-- Espace flexible pour pousser les cœurs au centre -->
-        <Region HBox.hgrow="ALWAYS"/>
+            <!-- Espace flexible pour pousser les cœurs au centre -->
+            <Region HBox.hgrow="ALWAYS"/>
 
-        <!-- Cœurs au centre -->
-        <HBox spacing="5" alignment="CENTER">
-            <ImageView fx:id="heart1" fitWidth="20" fitHeight="20">
-                <image>
+            <!-- Cœurs au centre -->
+            <HBox spacing="5" alignment="CENTER">
+                <ImageView fx:id="heart1" fitWidth="20" fitHeight="20">
                     <Image url="@../images/heart.png"/>
-                </image>
-            </ImageView>
-            <ImageView fx:id="heart2" fitWidth="20" fitHeight="20">
-                <image>
+                </ImageView>
+                <ImageView fx:id="heart2" fitWidth="20" fitHeight="20">
+                    <image>
+                        <Image url="@../images/heart.png"/>
+                    </image>
+                </ImageView>
+                <ImageView fx:id="heart3" fitWidth="20" fitHeight="20">
                     <Image url="@../images/heart.png"/>
-                </image>
-            </ImageView>
-            <ImageView fx:id="heart3" fitWidth="20" fitHeight="20">
-                <image>
-                    <Image url="@../images/heart.png"/>
-                </image>
-            </ImageView>
+                </ImageView>
+            </HBox>
+
+            <!-- Autre espace flexible -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Timer à droite -->
+            <Label fx:id="timerLabel" text="00:00" style="-fx-font-size: 16px;"/>
         </HBox>
 
-        <!-- Autre espace flexible -->
-        <Region HBox.hgrow="ALWAYS"/>
+        <padding>
+            <Insets top="10" right="10" bottom="10" left="10"/>
+        </padding>
+        <VBox alignment="CENTER" spacing="10" VBox.vgrow="ALWAYS">
+            <GridPane fx:id="gridPane" hgap="1" vgap="1" alignment="center"/>
+            <HBox fx:id="numberButtons" spacing="5" alignment="center">
+                <Label fx:id="normalLabel" text="Normal"/>
 
-        <!-- Timer à droite -->
-        <Label fx:id="timerLabel" text="00:00" style="-fx-font-size: 16px;"/>
-    </HBox>
+                <StackPane fx:id="switchContainer" prefWidth="50" prefHeight="10"
+                           style="-fx-background-color: lightgray; -fx-background-radius: 30;">
+                    <!-- fond de l'interrupteur -->
+                    <Rectangle fx:id="track" width="50" height="10" arcWidth="10" arcHeight="10"
+                               fill="lightgray"/>
+                    <!-- curseur -->
+                    <Circle fx:id="thumb" radius="13" fill="white" stroke="gray" translateX="-10"/>
+                </StackPane>
 
-    <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
-    </padding>
-    <VBox alignment="CENTER" spacing="10" VBox.vgrow="ALWAYS">
-        <GridPane fx:id="gridPane" hgap="1" vgap="1" alignment="center"/>
-        <HBox fx:id="numberButtons" spacing="5" alignment="center">
-            <Label fx:id="normalLabel" text="Normal"/>
+                <Label fx:id="annotationLabel" text="Annotation"/>
+            </HBox>
+        </VBox>
 
-            <StackPane fx:id="switchContainer" prefWidth="50" prefHeight="10"
-                       style="-fx-background-color: lightgray; -fx-background-radius: 30;">
-                <!-- fond de l'interrupteur -->
-                <Rectangle fx:id="track" width="50" height="10" arcWidth="10" arcHeight="10"
-                           fill="lightgray"/>
-                <!-- curseur -->
-                <Circle fx:id="thumb" radius="13" fill="white" stroke="gray" translateX="-10"/>
-            </StackPane>
-
-            <Label fx:id="annotationLabel" text="Annotation"/>
-        </HBox>
     </VBox>
 
-</VBox>
+    <Pane fx:id="overlay" pickOnBounds="false"/>
+</StackPane>
